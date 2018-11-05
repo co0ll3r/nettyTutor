@@ -7,6 +7,8 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 //        ((ByteBuf) msg).release(); // discard all data like a ninja!
+
+// Server that outputs messages in terminal (uses HTTP to receive and TCP to answer)
         ByteBuf in = (ByteBuf) msg;
         try{
             while (in.isReadable()) {
@@ -16,6 +18,10 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         } finally {
             ReferenceCountUtil.release(msg);
         }
+// Echo server, that replies with the same message (uses Echo -> HTTP protocol)
+/*
+        ctx.write(msg);
+        ctx.flush();*/
     }
 
     @Override
