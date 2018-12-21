@@ -30,10 +30,13 @@ public class ChatServer {
                     .childHandler((new ChatServerInitializer()));
             // wtf is this
             ChannelFuture future = bootstrap.bind(port).sync();
+            System.out.println("server started");
             future.channel().closeFuture().sync();
+            System.out.println("server started2");
         } finally {
             bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
         }
+        System.out.println("server closed");
     }
 }
