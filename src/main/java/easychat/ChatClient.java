@@ -8,38 +8,56 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class ChatClient {
-    private  final  String host;
+    private final String host;
     private final int port;
 
     public static void main(String[] args) throws Exception {
-        new ChatClient("localhost", 8000).run();
+        Scanner input = new Scanner(System.in);
+        System.out.println("input an ip address");
+        String ipHost = input.next();
+        if ("1".equals(ipHost)) {
+            ipHost = "localhost";
+            System.out.println("ip = localhost");
+        } else if ("2".equals(ipHost)) {
+            ipHost = "192.168.1.248";
+            System.out.println("ip = 192.168.1.248");
+        }
+        new ChatClient(ipHost, 8000).run();
     }
 
-    public static void main2(String[] args) throws Exception{
-        new ChatClient("localhost", 8000).run();
-    }
-
-    public ChatClient(String host, int port){
+    public ChatClient(String host, int port) {
         this.port = port;
         this.host = host;
     }
 
-    public void run() throws Exception{
+    public void run() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
-        try{
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("type your name:");
+        String name = in.readLine(), message;
+        try {
+
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioSocketChannel.class)
                     // pipeline below
                     .handler(new ChatClientInitializer());
             Channel channel = b.connect(host, port).sync().channel();
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            while(true){
-                channel.writeAndFlush(in.readLine() + "\r\n");
+
+            while (true) {
+                message = in.readLine();
+                if ("\\name".equals(message)) {
+                    System.out.println("type your name:");
+                    name = in.readLine();
+                }
+
+//                channel.writeAndFlush(name + ": " + message + "\r\n");
+                channel.writeAndFlush(message + "\r\n");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();

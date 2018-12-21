@@ -8,6 +8,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     // took executor from the comment to the video
     private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -36,8 +39,23 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
         Channel incoming = channelHandlerContext.channel();
+ //       Matcher regExp = Pattern.compile("(^.+:\\s)(.+)\r\n").matcher(s);
+//        String incomingMessage = regExp.group(2);
+        String incomingMessage = s;
+        System.out.println("mes " + incomingMessage);
+        // sending a message to everybody, except the sender
+        if ("\\list".equals(incomingMessage)) {
+            int i = 0;
+            StringBuilder userList = new StringBuilder();
+            for (Channel channel : channels) {
+                userList.append("User ").append(++i).append(" ip = ").append(incoming.remoteAddress()).append("/\n");
+            }
+            for (Channel channel : channels) {
+                channel.writeAndFlush(userList.toString());
+            }
+        }
         for (Channel channel : channels) {
-            if (channel != incoming){
+            if (channel != incoming) {
                 channel.writeAndFlush("[" + incoming.remoteAddress() + "]" + s + "\n");
             }
         }
