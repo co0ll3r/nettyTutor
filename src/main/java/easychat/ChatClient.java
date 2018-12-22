@@ -36,8 +36,7 @@ public class ChatClient {
     public void run() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("type your name:");
-        String name = in.readLine(), message;
+        String message = "\\name";
         try {
 
             Bootstrap b = new Bootstrap()
@@ -48,11 +47,15 @@ public class ChatClient {
             Channel channel = b.connect(host, port).sync().channel();
 
             while (true) {
-                message = in.readLine();
                 if ("\\name".equals(message)) {
                     System.out.println("type your name:");
-                    name = in.readLine();
+                    message = in.readLine();
+                    channel.writeAndFlush("\\name " + message + "\r\n");
+                    continue; // need it?
                 }
+                System.out.print("You: ");
+                message = in.readLine();
+
 
 //                channel.writeAndFlush(name + ": " + message + "\r\n");
                 channel.writeAndFlush(message + "\r\n");

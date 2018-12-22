@@ -14,8 +14,8 @@ public class ChatClientInitializer extends ChannelInitializer<SocketChannel> {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // what it the Delimeter??? Params??
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-        pipeline.addLast("decoder", new StringDecoder());
-        pipeline.addLast("encoder", new StringEncoder());
+        pipeline.addLast("decoder", new StringDecoder()); //
+        pipeline.addLast("encoder", new StringEncoder()); // utf_8 encoding
         pipeline.addLast("handler", new ChatClientHandler());
     }
 }
