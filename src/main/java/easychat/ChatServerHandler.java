@@ -49,7 +49,6 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
         channels.remove(ctx.channel());
     }
 
-
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
         Channel incoming = channelHandlerContext.channel();
@@ -79,9 +78,13 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
             for (Channel channel : channels) {
                 channel.writeAndFlush(userList.toString());
             }*/
-        } else
+        } else if ("\\exit".equals(incomingMessage)){
+            System.out.println("[" + incoming.remoteAddress() + "] решил уйти\n");
+            handlerRemoved(channelHandlerContext);
+        }
 //        if ("\\ps")
         // sending a message to everybody, except the sender
+        else
         for (Channel channel : channels) {
             if (channel != incoming) {
                 channel.writeAndFlush("[" + incoming.remoteAddress() + "]" + s + "\n");

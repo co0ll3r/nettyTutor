@@ -1,16 +1,10 @@
 package easychat;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -27,7 +21,12 @@ public class client_window {
 
     private String message;
     private Channel channel;
-    private boolean stayOnline;
+    private String address;
+    private String name;
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public client_window() {
         send.addActionListener(new ActionListener() {
@@ -40,8 +39,19 @@ public class client_window {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                   sendMessage();
+                    sendMessage();
                 }
+            }
+        });
+        connectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.printf("pushed");
+                message = print_msg.getText();
+                if ("1".equals(message))
+                    address = "localhost";
+                else if ("2".equals(message))
+                    address = "192.168.1.248";
             }
         });
     }
@@ -55,89 +65,13 @@ public class client_window {
 //                        incoming_msg.append("Type your name:\n");
             channel.writeAndFlush("\\name " + message + "\r\n");
             incoming_msg.append("Your name is: " + message + " now\r\n");
-        } else if ("\\exit".equals(message)){
-            stayOnline =false;
-        }
-
-        else {
+        } else if ("\\exit".equals(message)) {
+            System.out.println("closing app");
+            channel.writeAndFlush(message + "\r\n");
+        } else {
             channel.writeAndFlush(message + "\r\n");
         }
     }
- /*   public void run(String host, int port) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
-        String message = "\\name";
-        try {
-
-            Bootstrap b = new Bootstrap()
-                    .group(group)
-                    .channel(NioSocketChannel.class)
-                    // pipeline below
-                    .handler(new ChatClientInitializer());
-            Channel channel = b.connect(host, port).sync().channel();
-
-*//*                if ("\\name".equals(message)) {
-                    System.out.println("type your name:");
-                    message = in.readLine();
-                    channel.writeAndFlush("\\name " + message + "\r\n");
-                    continue; // need it?
-                }
-                System.out.print("You: ");
-                message = in.readLine();
-
-
-//                channel.writeAndFlush(name + ": " + message + "\r\n");
-                channel.writeAndFlush(message + "\r\n");*//*
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            group.shutdownGracefully();
-        }
-
-    }*/
-/*
-    public void runClient(String host, int port) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
-        message = "\\name";
-        try {
-
-            Bootstrap b = new Bootstrap()
-                    .group(group)
-                    .channel(NioSocketChannel.class)
-                    // pipeline below
-                    .handler(new ChatClientInitializer());
-            channel = b.connect(host, port).sync().channel();
-
-            JFrame frame = new JFrame("client_window");
-            frame.setContentPane(new client_window().rootPanel);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setVisible(true);
-            main(new String[]{});
-
-            while (true) {
-            }
-
-            while (true) {
-            {
-                if ("\\name".equals(message)) {
-                    System.out.println("type your name:");
-                    channel.writeAndFlush("\\name " + message + "\r\n");
-                    continue; // need it?
-                }
-                System.out.print("You: ");
-//                message = in.readLine();
-
-
-//                channel.writeAndFlush(name + ": " + message + "\r\n");
-                channel.writeAndFlush(message + "\r\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            group.shutdownGracefully();
-        }
-
-    }*/
 
     public static void main(String[] args) {
         client_window client = new client_window();
@@ -160,9 +94,17 @@ public class client_window {
                     .channel(NioSocketChannel.class)
                     // pipeline below
                     .handler(new ChatClientInitializer(client));
-            client.channel = b.connect("localhost", 8000).sync().channel();
+            System.out.println("1st");
+            while (address == null) {
+                dialogWithClient a = new dialogWithClient(client);
+                a.run(client);
+                if (address == null)
+                    System.out.println("error");
+            }
+
+            client.channel = b.connect(address, 8000).sync().channel();
             System.out.println("TRIED");
-            while (stayOnline) {}
+            while (true) { }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
