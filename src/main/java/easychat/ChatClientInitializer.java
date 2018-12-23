@@ -9,6 +9,16 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 public class ChatClientInitializer extends ChannelInitializer<SocketChannel> {
+    client_window client;
+    boolean isInterface;
+
+    ChatClientInitializer(){
+        isInterface = false;
+    }
+    ChatClientInitializer(client_window client){
+        this.client = client;
+        isInterface = true;
+    }
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
@@ -16,6 +26,9 @@ public class ChatClientInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast("decoder", new StringDecoder()); //
         pipeline.addLast("encoder", new StringEncoder()); // utf_8 encoding
-        pipeline.addLast("handler", new ChatClientHandler());
+        if (isInterface)
+            pipeline.addLast("handler", new ChatClientHandler(client));
+        else
+            pipeline.addLast("handler", new ChatClientHandler());
     }
 }

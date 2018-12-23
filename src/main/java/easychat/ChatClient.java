@@ -7,17 +7,52 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.InputStreamReader;
-import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ChatClient {
     private final String host;
     private final int port;
 
+    public static Console console;
+/** UI PART */
+
+    /*
+    private JButton send;
+    private JTextArea incoming_msg;
+    private JTextField print_msg;
+    private JPanel rootPanel;
+
+    public ChatClient() {
+        send.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String s = print_msg.getText();
+                incoming_msg.insert(s + "\n", 0);
+                print_msg.setText("");
+
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("client_window");
+        frame.setContentPane(new client_window().rootPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
+   */
+/* UI PART END  */
     public static void main(String[] args) throws Exception {
-        Scanner input = new Scanner(System.in);
+//        client_window.main(new String[]{""});
+
         System.out.println("input an ip address");
-        String ipHost = input.next();
+        String ipHost = "1"; // input.next();
         if ("1".equals(ipHost)) {
             ipHost = "localhost";
             System.out.println("ip = localhost");

@@ -4,13 +4,23 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ChatClientHandler extends SimpleChannelInboundHandler<String> {
+    client_window client;
+    boolean withInterface;
 
+    ChatClientHandler(){
+        withInterface = false;
+    }
+    ChatClientHandler(client_window client){
+        this.client = client;
+        withInterface = true;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
         // just print message???0_o
-//        System.out.print("client handle");
         System.out.println(s);
-//        System.out.println("Got chat handler");
+        if (withInterface){
+            client.incoming_msg.append(s + "\n");
+        }
     }
 }

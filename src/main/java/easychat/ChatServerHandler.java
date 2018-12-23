@@ -36,6 +36,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
 
 //        userTable.put(incoming.remoteAddress(), "");
         channels.add(ctx.channel());
+        incoming.writeAndFlush("Welcome, you successfully connected\r\n");
     }
 
     @Override
