@@ -17,7 +17,6 @@ public class client_window {
     JTextArea incoming_msg;
     private JTextField print_msg;
     private JPanel rootPanel;
-    private JButton connectButton;
 
     private String message;
     private Channel channel;
@@ -43,7 +42,7 @@ public class client_window {
                 }
             }
         });
-        connectButton.addActionListener(new ActionListener() {
+/*        connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.printf("pushed");
@@ -53,7 +52,7 @@ public class client_window {
                 else if ("2".equals(message))
                     address = "192.168.1.248";
             }
-        });
+        });*/
     }
 
     public void sendMessage() {
@@ -68,6 +67,12 @@ public class client_window {
         } else if ("\\exit".equals(message)) {
             System.out.println("closing app");
             channel.writeAndFlush(message + "\r\n");
+            try {
+                channel.closeFuture().await();
+            } catch (InterruptedException e) {
+                System.out.println("exception caught");
+                e.printStackTrace();
+            }
         } else {
             channel.writeAndFlush(message + "\r\n");
         }
@@ -94,7 +99,6 @@ public class client_window {
                     .channel(NioSocketChannel.class)
                     // pipeline below
                     .handler(new ChatClientInitializer(client));
-            System.out.println("1st");
             while (address == null) {
                 dialogWithClient a = new dialogWithClient(client);
                 a.run(client);
@@ -103,7 +107,7 @@ public class client_window {
             }
 
             client.channel = b.connect(address, 8000).sync().channel();
-            System.out.println("TRIED");
+            System.out.println("now you can input");
             while (true) { }
         } catch (Exception e) {
             e.printStackTrace();

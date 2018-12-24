@@ -43,7 +43,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
         for (Channel channel : channels) {
-            channel.writeAndFlush("[СЕРВАК] - " + incoming.remoteAddress() + " отлетел\n");
+            channel.writeAndFlush("[СЕРВАК] - " + incoming.remoteAddress() + " отсоединился\n");
         }
 
         channels.remove(ctx.channel());
@@ -80,6 +80,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String> {
             }*/
         } else if ("\\exit".equals(incomingMessage)){
             System.out.println("[" + incoming.remoteAddress() + "] решил уйти\n");
+            incoming.closeFuture().sync();
             handlerRemoved(channelHandlerContext);
         }
 //        if ("\\ps")
